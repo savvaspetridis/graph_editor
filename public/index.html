@@ -173,6 +173,11 @@
                                 ($scope.source_cell.findView($scope.paper)).unhighlight();
                                 console.log("new connection.");
                             }
+                            else{
+                                ($scope.source_cell.findView($scope.paper)).unhighlight();
+                                $scope.source_cell = 0; 
+                                $scope.link_count = 0; 
+                            }
                             // set selected node count to 0 
                             $scope.link_count = 0; 
                         }
