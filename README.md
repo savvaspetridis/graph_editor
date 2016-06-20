@@ -36,11 +36,11 @@ Express app running on port: 3000
 1. On the top you'll see the option to view a saved graph. Obviously there won't be any options there if you've just started.
 2. Right below you'll find two toggles, one for node type and the other for deleting select nodes. 
 
-Types of nodes: 
+###Types of nodes: 
 1. Primary: You can add edit the value of these nodes. They represent the initial inputs. The values of these primary nodes affect the values of all the 'regular' nodes through the relationships, or links, between them. 
 2. Regular: You can only edit the names of these nodes. Each one of these nodes is connected to a primary node. The links between these nodes and the primary nodes determine the values they hold. 
 
-Links:
+###Links:
 Connections between nodes can be made by simply selecting one, by clicking, and then clicking another node. Later, one will be able to choose the exact mathematical relationship between nodes. As of right now, one can only add a Link Weight in the menu above. A link weight must be a number. The value of a regular node is currently calculated as follows: 
 
 R : Target Regular Node
@@ -54,9 +54,9 @@ for each source_node in source_nodes:
 
 The value of each node is calculated upon pressing the 'calc' button. 
 
-Saving: 
+###Saving: 
 You can save a graph you're working on by simply giving it a name and pressing 'save'. The graph will appear on the list of options right after, and every time you start this application.
 
-Deletion: 
+###Deletion: 
 You can remove all the nodes from the graph by pressing 'delete all'. 
 You can remove select nodes (and all their links) by toggling 'delete select' and then clicking on nodes. 
