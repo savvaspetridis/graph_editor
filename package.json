@@ -1,0 +1,17 @@
+{
+  "name": "generative_policy_game",
+  "version": "1.0.0",
+  "description": "a game designed for a computer to 'learn' user decisions and generate policies",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Savvas Petridis",
+  "license": "ISC",
+  "dependencies": {
+    "angular": "^1.5.6",
+    "express": "^4.13.4",
+    "body-parser": "^1.14.1",
+    "cors": "^2.7.1",
+  }
+}
