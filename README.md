@@ -43,9 +43,7 @@ Express app running on port: 3000
 ###Links:
 Connections between nodes can be made by simply selecting one, by clicking, and then clicking another node. Later, one will be able to choose the exact mathematical relationship between nodes. As of right now, one can only add a Link Weight in the menu above. A link weight must be a number. The value of a regular node is currently calculated as follows: 
 
-1. R : Target Regular Node
-2. SN : Source Nodes
-
+R : Target Regular Node
 ```
 R.value = 0; 
 for each source_node in source_nodes:
