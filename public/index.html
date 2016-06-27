@@ -23,17 +23,39 @@
 
     <h1 align = "center">resource graph</h1>
     <dl></dl>
-
     <!-- ANGULAR STARTS HERE --> 
 
-    <div ng-app="graphApp" ng-controller="graph_controller" data-ng-init="init()" align="center">
+    <div ng-app="graphApp" ng-controller="graph_controller" align="center">
 
-        <form>
-        view saved graph:
-            <select id="graph_options">
-            </select>
-            <button type="button"  ng-click="retrieve_graph()">select</button>
-        </form>
+<!-- data-ng-init="init()" --> 
+        <div>
+        <button type="button" ng-click="view_saved_graph_options = !view_saved_graph_options ; delete_saved_graph = false ; view_saved_graph = false" > saved graphs </button>
+        </div>
+
+        <div ng-show = "view_saved_graph_options">
+            <button type="button" ng-click="view_saved_graph = !view_saved_graph ; delete_saved_graph = false"> view </button>
+            <button type="button" ng-click="delete_saved_graph = !delete_saved_graph ; view_saved_graph = false"> delete </button>
+        </div>
+
+        <div ng-show = "view_saved_graph">
+            <form>
+            view:
+                <select id="view_options">
+                </select>
+                <button type="button"  ng-click="retrieve_graph()">select</button>
+            </form>
+        </div>
+
+         <div ng-show = "delete_saved_graph">
+            <form>
+            delete:
+                <select id="delete_options">
+                </select>
+                <button type="button"  ng-click="delete_graph()">select</button>
+            </form>
+        </div>
+
+
 
          node type: 
         <label class="switch">
@@ -193,15 +215,22 @@
                         }
                     }
                     else{
+
+                        // if node being deleted: cellView.model, is the source cell (highlighted), set link count to 0.
+                        if(cellView.model == $scope.source_cell){
+                            $scope.link_count = 0;
+                        }
                         cellView.model.remove(); 
                     }   
                 }); 
 
                 // when white space is clicked, unhighlight node & deselect it
                 $scope.paper.on('blank:pointerclick', function(evt, x, y) {
-                    $scope.source_cell.findView($scope.paper).unhighlight();
-                    $scope.source_cell = 0; 
-                    $scope.link_count = 0; 
+                    if($scope.source_cell != 0){
+                        $scope.source_cell.findView($scope.paper).unhighlight();
+                        $scope.source_cell = 0; 
+                        $scope.link_count = 0; 
+                    }
                 });
 
                 $scope.fix_graph_data = function(data) { 
@@ -275,11 +304,31 @@
                     }       
 
                 };
+                
+                $scope.delete_graph = function() {
+                    
+                    var graph = document.getElementById('delete_options');
+
+                    if(graph.selectedIndex != -1){
+                        $http.post("/delete", {
+                            name: graph.options[graph.selectedIndex].text,
+                            index: graph.selectedIndexs,
+
+                        }).success(function(data, status, headers, config) { 
+
+                            $scope.remove_option_from_graph_list(graph.selectedIndex); 
+                            console.log("Success: graph deleted.");
+                        }).
+                        error(function(data, status) {
+                            console.log("Failure: couldn't delete graph.");
+                        });
+                    } 
+                };
 
                 $scope.retrieve_graph = function() {
 
                     // get selected graph information
-                    var graph = document.getElementById('graph_options'); 
+                    var graph = document.getElementById('view_options'); 
 
                     if(graph.selectedIndex != -1){
                         $http.post("/graph", {
@@ -290,7 +339,7 @@
                             delete data['name'];
                             $scope.graph_to_show = data
 
-                            $scope.fix_graph_data(data);
+                            //$scope.fix_graph_data(data);
                             $scope.graph.fromJSON(data);
 
                             console.log("Success: graph received.");
@@ -318,25 +367,42 @@
 
                 $scope.append_select_list = function() {
                     var option = document.createElement('option');
+                    var option2 = document.createElement('option');
                     option.value = option.text = $scope.graph_save_name;
-                    (document.getElementById('graph_options')).add(option);
+                    option2.value = option2.text = $scope.graph_save_name;
+                    (document.getElementById('view_options')).add(option);
+                    (document.getElementById('delete_options')).add(option2);
 
                     $scope.i++;
                 };
+
+                $scope.remove_option_from_graph_list = function(index) {
+                    var delete_options = document.getElementById('delete_options');
+                    var view_options = document.getElementById('view_options');
+
+                    delete_options.remove(index);
+                    view_options.remove(index);
+                }; 
 
                 $scope.fetch_selections = function(graph_names) {
 
                     if($scope.i == 0) {
                         for(i = 0; i < graph_names.length; i++){
+                            console.log("DAMN " + i);
                             var option = document.createElement('option');
+                            var option2 = document.createElement('option');
                             option.value = option.text = graph_names[i];
-                            (document.getElementById('graph_options')).add(option);
+                            option2.value = option2.text = graph_names[i];
+                            //(document.getElementById('view_options')).add(option);
+                            (document.getElementById('delete_options')).add(option);
+                            (document.getElementById('view_options')).add(option2);
                         }
                         $scope.i++;
                     }
                 };
 
                 $scope.save = function() {
+
                     var current_graph = $scope.graph;
                     var graph_json = current_graph.toJSON();
                     graph_json.name = $scope.graph_save_name;
