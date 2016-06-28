@@ -73,30 +73,45 @@
             <form>  
             regular:
                 <input type="text" ng-model="node_name" placeholder="name..."/>
+                <input type="text" ng-model="node_val" placeholder="value..." />
                 <button type="button"  ng-click="add_node()">add</button>
             </form>
         </div>
 
         <div ng-show = "prim_node"> 
-         primary:
-            <button type="button" ng-click="prim_edit = !prim_edit">edit</button>
-            <button type="button" ng-click="prim_add = !prim_add">add</button>
+         <form>  
+            primary:
+                <input type="text" ng-model="primnode_name" placeholder="name..."/>
+                <input type="text" ng-model="primnode_val" placeholder="value..."/>
+                <button type="button"  ng-click="add_node()">add</button>
+        </form>
+            <!-- <button type="button" ng-click="prim_edit = !prim_edit">edit</button> --> 
+            <!--<button type="button" ng-click="prim_add = !prim_add">add</button> -->
 
-            <div ng-show = "prim_add"> 
+            <!--<div ng-show = "prim_add"> 
                 <form>
                     <input type="text" ng-model="primnode_name" placeholder="name..." required />
                     <input type="text" ng-model="primnode_val" placeholder="value..." required />
                     <button type="button" ng-click="add_node()">add</button>
                 </form>
-            </div>
+            </div>-->
 
-            <div ng-show = "prim_edit"> 
+            <!-- <div ng-show = "prim_edit"> 
                 <form>
                     <input type="text" ng-model="primnode_edit_name" placeholder="name..." required />
                     <input type="text" ng-model="primnode_edit_val" placeholder="value..." required />
                     <button type="button" ng-click="edit_primary()">edit</button>
                 </form>
-            </div>
+            </div> --> 
+        </div>
+
+        <div>
+            <form>
+                edit:
+                <input type="text" ng-model="edit_name" placeholder="name..." required />
+                <input type="text" ng-model="edit_val" placeholder="value..." required />
+                <button type="button" ng-click="edit_node()">edit</button>
+            </form>
         </div>
 
         <div>
@@ -146,6 +161,7 @@
             }*/
 
                 $scope.i = 0;
+                $scope.node_count = 0;
                 $scope.region_label = "Region A"
                 $scope.add_node = false; 
                 $scope.graph_to_show = 0;
@@ -674,13 +690,32 @@
                     console.log("done"); 
                 }; 
 
-                $scope.edit_primary = function() {
+                $scope.edit_node = function() {
                     if($scope.source_cell != 0){
-                        var new_name = $scope.primnode_edit_name;
-                        var new_value = $scope.primnode_edit_val;
-                        $scope.source_cell.attr('name', new_name); 
-                        $scope.source_cell.attr('value', new_value); 
-                        $scope.source_cell.attr('text/text', new_name + "\n" + new_value); 
+
+                        var name = $scope.source_cell.attr('name');
+                        var value = $scope.source_cell.attr('value');
+
+                        if($scope.edit_name != undefined){ 
+                            name = $scope.edit_name;
+                        }
+                        if($scope.edit_val != undefined){
+                            value = $scope.edit_val;
+                        }
+
+                        $scope.source_cell.attr('name', name); 
+                        $scope.source_cell.attr('value', value); 
+
+                        /*var new_name = $scope.edit_name;
+                        var new_value = $scope.edit_val;
+                        if($scope.edit_name != ''){
+                            $scope.source_cell.attr('name', new_name); 
+                        }
+                        if($scope.edit_val != ''){
+                            $scope.source_cell.attr('value', new_value); 
+                        }*/
+
+                        $scope.source_cell.attr('text/text', name + "\n" + value); 
                     }
                 };
 
@@ -691,11 +726,31 @@
                     var y = Math.floor((Math.random() * 300) + 1);
                     var zero = 0;
 
+                    var name = 'no name' + ' ' + String($scope.node_count);
+                    var value = '0';
+                    var prim_name = 'no name' + ' ' + String($scope.node_count);
+                    var prim_val = '0';
+
+                    if($scope.node_name != undefined && $scope.node_name != ''){
+                        name = $scope.node_name;
+                    }
+                    if($scope.node_val != undefined && $scope.node_val != ''){
+                        value = $scope.node_val;
+                    }
+                    if($scope.primnode_name != undefined && $scope.primnode_name != ''){
+                        prim_name = $scope.primnode_name;
+                    }
+                    if($scope.primnode_val != undefined && $scope.primnode_val != ''){
+                        prim_val = $scope.primnode_val;
+                    }
+
                     if($scope.prim_node == true) {
-                        var new_node = node(x, y, 'orange', $scope.primnode_name, $scope.primnode_val, true);
+                        $scope.node_count++;
+                        var new_node = node(x, y, 'orange', prim_name, prim_val, true);
                     }
                     else {
-                        var new_node = node(x, y, 'blue', $scope.node_name, zero, false); 
+                        $scope.node_count++;
+                        var new_node = node(x, y, 'blue', name, value, false); 
                     }
 
                     $scope.count++; 
