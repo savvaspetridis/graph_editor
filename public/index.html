@@ -21,13 +21,13 @@
 </head>
 <body>
 
-    <h1 align = "center">resource graph</h1>
-    <dl></dl>
     <!-- ANGULAR STARTS HERE --> 
+
+    <h1 align = "center"> resource graph</h1>
+    <dl></dl>
 
     <div ng-app="graphApp" ng-controller="graph_controller" align="center">
 
-<!-- data-ng-init="init()" --> 
         <div>
         <button type="button" ng-click="view_saved_graph_options = !view_saved_graph_options ; delete_saved_graph = false ; view_saved_graph = false" > saved graphs </button>
         </div>
@@ -99,11 +99,25 @@
             </div>
         </div>
 
+        <div>
+            <form>
+            color:
+                <select id="color_options">
+                    <option value="green">green</option>
+                    <option value="red">red</option>
+                    <option value="yellow">yellow</option>
+                    <option value="purple">purple</option>
+                    <option value="pink">pink</option>
+                </select>
+                <button type="button" ng-click="change_node_color()">select</button>
+            </form>
+        </div>
+
         link weight: <input type="text" ng-model="weight" placeholder="weight..."/>
 
         <br>
 
-        <button type="button" ng-click="delete_all()">delete all</button>
+        <button type="button" ng-click="clear()">clear</button>
         <button type="button" ng-click="log_values()">log values</button>
         <button type="button"  ng-click="calc_nodes()">calc</button>
 
@@ -114,15 +128,33 @@
 
         <hr>
 
+        months passed: {{ months_passed }},  food: {{ food }},  medicine: {{ medicine }},  roads: {{ roads }},  education: {{ education }},  entertainment: {{ entertainment }} 
+
+        <hr>
+
         <div id="myholder"> </div>
 
         <script>
             var app = angular.module('graphApp', []);
             app.controller('graph_controller', ['$scope', '$http', '$window', function($scope, $http, $window){
 
+                /*addEventListener('load', load, false);
+
+            function load(){
+                var el = document.getElementById("color_options");
+                alert(el);
+            }*/
+
                 $scope.i = 0;
+                $scope.region_label = "Region A"
                 $scope.add_node = false; 
                 $scope.graph_to_show = 0;
+                $scope.months_passed = 0;
+                $scope.food = 0;
+                $scope.medicine = 0;
+                $scope.roads = 0;
+                $scope.education = 0;
+                $scope.entertainment = 0;
                 $scope.link_count = 0;
                 $scope.source_cell = 0; 
                 $scope.count = 0; 
@@ -233,7 +265,17 @@
                     }
                 });
 
-                $scope.fix_graph_data = function(data) { 
+                $scope.change_node_color = function() {
+                    if($scope.source_cell != 0) { 
+                        var color_options1 = angular.element(color_options);
+                        var selected_color = color_options1.val();
+                        $scope.source_cell.attr('rect/fill', selected_color);
+                    }
+                };
+
+
+                // old function for json saving
+                /* $scope.fix_graph_data = function(data) { 
 
                     var cells = data['cells'];
                     var cell = 0;
@@ -303,7 +345,7 @@
                             }
                     }       
 
-                };
+                }; */
                 
                 $scope.delete_graph = function() {
                     
@@ -388,17 +430,15 @@
 
                     if($scope.i == 0) {
                         for(i = 0; i < graph_names.length; i++){
-                            console.log("DAMN " + i);
                             var option = document.createElement('option');
                             var option2 = document.createElement('option');
                             option.value = option.text = graph_names[i];
                             option2.value = option2.text = graph_names[i];
-                            //(document.getElementById('view_options')).add(option);
                             (document.getElementById('delete_options')).add(option);
                             (document.getElementById('view_options')).add(option2);
                         }
                         $scope.i++;
-                    }
+                    }   
                 };
 
                 $scope.save = function() {
@@ -428,10 +468,16 @@
                     }
                 }; 
 
-                $scope.delete_all = function() {
+                $scope.clear = function() {
                     $scope.count = 0; 
                     $scope.link_count = 0;
                     $scope.graph.clear();
+                    $scope.food = 0; 
+                    $scope.months_passed = 0;
+                    $scope.medicine = 0; 
+                    $scope.roads = 0;
+                    $scope.education = 0;
+                    $scope.entertainment = 0;
                 }; 
 
                 $scope.reset = function() {
@@ -443,10 +489,84 @@
                         current_node.attr('calculated', false); 
                         current_node.attr('incre', 0); 
 
-                        is_prim_node = current_node.attr('prim_node'); 
+                        /*is_prim_node = current_node.attr('prim_node'); 
                         if(is_prim_node == false){
                             current_node.attr('value', 0); 
+                        }*/
+                    }
+                };
+
+                $scope.get_primary_nodes = function() { 
+
+                    var primary_nodes = [];
+                    var nodes = $scope.graph.getElements();
+
+                    console.log(nodes);
+
+                    for(i = 0; i < nodes.length; i++){
+                        if(nodes[i].attr('prim_node') == true){
+                            primary_nodes.push(nodes[i]); 
                         }
+                    }
+
+                    return primary_nodes;
+
+                }
+
+                $scope.get_primary_node_values = function() {
+
+                    var primary_nodes = $scope.get_primary_nodes();
+
+                    console.log("PRIMARY NODES: ");
+                    console.log(primary_nodes);
+
+
+                    var primary_value_list = [];
+
+                    for(i = 0; i < primary_nodes.length; i++){
+                        if(primary_nodes[i].attr('text/text').indexOf('food') > -1){
+                            primary_value_list[0] = primary_nodes[i].attr('value');
+                        }
+                        if(primary_nodes[i].attr('text/text').indexOf('medicine') > -1){
+                            primary_value_list[1] = primary_nodes[i].attr('value');
+                        }
+                        if(primary_nodes[i].attr('text/text').indexOf('entertainment') > -1){
+                            primary_value_list[2] = primary_nodes[i].attr('value');
+                        }
+                        if(primary_nodes[i].attr('text/text').indexOf('roads') > -1){
+                            primary_value_list[3] = primary_nodes[i].attr('value');
+                        }
+                        if(primary_nodes[i].attr('text/text').indexOf('education') > -1){
+                            primary_value_list[4] = primary_nodes[i].attr('value');
+                        }
+                    }
+
+                    return primary_value_list;
+
+
+                };
+
+                $scope.update_resource_view = function() { 
+                    var value_list = $scope.get_primary_node_values();
+
+                    console.log("VALUE LIST");
+                    console.log(value_list);
+
+                    $scope.months_passed += 3; 
+                    if(value_list[0] != undefined){
+                        $scope.food = String(Number($scope.food) + Number(value_list[0]));
+                    }
+                    if(value_list[1] != undefined){
+                        $scope.medicine = String(Number($scope.medicine) + Number(value_list[1]));
+                    }
+                    if(value_list[2] != undefined){
+                        $scope.entertainment = String(Number($scope.entertainment) + Number(value_list[2]));
+                    }
+                    if(value_list[3] != undefined){
+                        $scope.roads = String(Number($scope.roads) + Number(value_list[3]));
+                    }
+                    if(value_list[4] != undefined){
+                        $scope.education = String(Number($scope.education) + Number(value_list[4]));
                     }
                 }; 
 
@@ -464,12 +584,13 @@
 
                 $scope.calc_nodes = function() {
 
+                    $scope.update_resource_view();
                     $scope.reset(); 
 
                     // get nodes
                     var nodes = $scope.graph.getElements(); 
 
-                    console.log(nodes);
+                    //console.log(nodes);
 
 
                     var calculated_nodes = 0; 
@@ -491,7 +612,7 @@
 
                     while(calculated_nodes < nodes.length) {
                         for(i = 0; i < nodes.length; i++){
-                            console.log("calculated_nodes: " + calculated_nodes); 
+                            //console.log("calculated_nodes: " + calculated_nodes); 
                             current_node = nodes[i]; 
                             value = Number((current_node.attr('value'))); 
 
@@ -500,34 +621,34 @@
                             //console.log("value: " + value[0]);
                             calculated = current_node.attr('calculated'); 
 
-                            console.log("calculated: " + calculated); 
+                            //console.log("calculated: " + calculated); 
 
                             num_inbounds = ($scope.graph.getConnectedLinks(current_node, opt2)).length;
                             node_incre = current_node.attr('incre'); 
 
-                            console.log("node_incre: " + node_incre); 
+                            //console.log("node_incre: " + node_incre); 
 
                             if(node_incre == num_inbounds && !calculated){
                                 outbound_links = $scope.graph.getConnectedLinks(current_node, opt); 
-                                console.log(outbound_links);
+                                //console.log(outbound_links);
                                 for(j = 0; j < outbound_links.length; j++){
                                     target = outbound_links[j].getTargetElement(); 
                                     target_val = Number(target.attr('value'));
 
-                                    console.log("target_val1: " + target_val);
+                                    //console.log("target_val1: " + target_val);
 
-                                    console.log(value);
-                                    console.log(Number(outbound_links[j].attr('weight')));
+                                    //console.log(value);
+                                    //console.log(Number(outbound_links[j].attr('weight')));
 
-                                    console.log(value * Number(outbound_links[j].attr('weight')));
+                                    //console.log(value * Number(outbound_links[j].attr('weight')));
                                     
                                     target_val += value * Number(outbound_links[j].attr('weight'));
 
-                                    console.log("target_val2: " + target_val);
+                                    //console.log("target_val2: " + target_val);
                                     target_val = truncateDecimals(target_val, 2);
 
 
-                                    console.log("target_val3: " + target_val);
+                                    //console.log("target_val3: " + target_val);
 
                                     target.attr('value', String(target_val));  
                                     target_incre = target.attr('incre');  
@@ -536,16 +657,15 @@
                                 }
                                 current_node.attr('calculated', true); 
 
-                                console.log("CALCULATE: ");
-                                console.log(current_node);
-                                console.log("^^^^^^^^^^^");
+                                //console.log("CALCULATE: ");
+                                //console.log(current_node);
+                                //console.log("^^^^^^^^^^^");
                                 calculated_nodes++;  
                             } 
                         }
                     }
 
                     $scope.update_nodes(); 
-
                     console.log("done"); 
                 }; 
 

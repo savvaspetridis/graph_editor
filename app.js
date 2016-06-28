@@ -87,7 +87,12 @@ app.get('/retrieve', function(req,res,next) {
 
 				console.log(graph_names_to_send);
 
-				res.end(JSON.stringify(graph_names_to_send));
+				if(graph_names_to_send.length > 0){
+					res.end(JSON.stringify(graph_names_to_send));
+				}
+				else{
+					//res.sendStatus(200);
+				}
 
 			}
 		}
@@ -146,6 +151,7 @@ app.post('/graph', function (req, res, next) {
 	var node_id = ''; 
 	var node_text = '';
 	var node_value = '';
+	var is_prim_node = false; 
 
 	var acquired_nodes = false; 
 	var acquired_links = false; 
@@ -176,6 +182,13 @@ app.post('/graph', function (req, res, next) {
     				node_value = node_info['value'];
     				node_z = node_info['z'];
 
+    				if(node_color == 'orange'){
+    					is_prim_node = true;
+    				}
+    				else {
+    					is_prim_node = false;
+    				}
+
     				var node_json = { 'type' : 'basic.Rect', 
     								  'position' : { 'x' : node_x, 'y': node_y },
     								  'size' : { 'width' : 100, 'height' : 30 },
@@ -185,7 +198,8 @@ app.post('/graph', function (req, res, next) {
     								  'attrs' : { 'rect' : { 'fill' : node_color }, 
     								  			  'text' : { 'fill' : 'white', 'text' : node_text}, 
     								  			  'value' : node_value, 
-    								  			  'name' : node_name	
+    								  			  'name' : node_name,
+    								  			  'prim_node' : is_prim_node	
     								  			} 
     								}
 
