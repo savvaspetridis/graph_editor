@@ -10,13 +10,13 @@
 
     <title>model</title>
 
-    <link rel="stylesheet" type="text/css" href="/css/joint.css" />
-    <link rel="stylesheet" type="text/css" href="/css/switch.css" />
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/lodash.min.js"></script>
-    <script src="/js/backbone-min.js"></script>
-    <script src="/js/joint.js"></script>
-    <script src="/js/angular.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/joint.css" />
+    <link rel="stylesheet" type="text/css" href="./css/switch.css" />
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/backbone-min.js"></script>
+    <script src="./js/joint.js"></script>
+    <script src="./js/angular.min.js"></script>
 
 </head>
 <body>
@@ -367,8 +367,18 @@
                     } 
                 };
 
+                $scope.reset_countables = function() {
+                    $scope.food = 0; 
+                    $scope.months_passed = 0;
+                    $scope.medicine = 0; 
+                    $scope.roads = 0;
+                    $scope.education = 0;
+                    $scope.entertainment = 0;
+                }
+
                 $scope.retrieve_graph = function() {
 
+                    $scope.reset_countables();
                     // get selected graph information
                     var graph = document.getElementById('view_options'); 
 
@@ -472,12 +482,7 @@
                     $scope.count = 0; 
                     $scope.link_count = 0;
                     $scope.graph.clear();
-                    $scope.food = 0; 
-                    $scope.months_passed = 0;
-                    $scope.medicine = 0; 
-                    $scope.roads = 0;
-                    $scope.education = 0;
-                    $scope.entertainment = 0;
+                    $scope.reset_countables();
                 }; 
 
                 $scope.reset = function() {
